@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  build:
+    name: GHC ${{ matrix.ghc }}
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - ghc: "9.10.3"
+            snapshot: "lts-24.34"
+          - ghc: "9.8.4"
+            snapshot: "lts-23.22"
+          - ghc: "9.6.7"
+            snapshot: "lts-22.43"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Haskell (Stack + GHC)
+        uses: haskell-actions/setup@v2
+        with:
+          ghc-version: ${{ matrix.ghc }}
+          enable-stack: true
+          stack-version: latest
+
+      - name: Cache Stack global packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.stack
+          key: stack-global-${{ matrix.ghc }}-${{ hashFiles('stack.yaml', 'core-of-name.cabal') }}
+          restore-keys: |
+            stack-global-${{ matrix.ghc }}-
+
+      - name: Cache Stack local work dir
+        uses: actions/cache@v4
+        with:
+          path: .stack-work
+          key: stack-work-${{ matrix.ghc }}-${{ hashFiles('stack.yaml', 'core-of-name.cabal', '**/*.hs') }}
+          restore-keys: |
+            stack-work-${{ matrix.ghc }}-
+
+      - name: Build
+        run: stack build --snapshot ${{ matrix.snapshot }} --system-ghc --no-terminal
+
+      - name: Test
+        run: stack test --snapshot ${{ matrix.snapshot }} --system-ghc --no-terminal
