@@ -16,7 +16,8 @@ import Language.Haskell.TH.Syntax (liftData)
 --   GHC Core representation we want to inspect.
 data Target = MkTarget { 
   tgOptions :: Options
-, tgName :: Name } deriving (Data)
+, tgName :: Name 
+} deriving (Data)
 
 data Options = OPrintCore 
              | OToFile FilePath 
