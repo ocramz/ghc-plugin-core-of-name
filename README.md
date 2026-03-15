@@ -8,23 +8,58 @@ Based on the technique described in
 ## Usage
 
 1. Add `core-of-name` to your `build-depends`.
-2. In the module whose bindings you want to inspect:
+2. In the module whose bindings you want to inspect, enable `TemplateHaskell` and the plugin, then call `coreOf` or `coreOfWith` after the binding:
+
+### `coreOf` — print Core to stdout
 
 ```haskell
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -fplugin=CoreOfName.Plugin #-}
 module MyModule where
 
-import CoreOfName.Types (inspect)
+import CoreOfName.Types (coreOf)
 
 f :: Double -> Double -> Double
 f = \x y -> sqrt x + y
 
-inspect 'f
+coreOf 'f
 ```
 
-3. Build (`stack build` or `cabal build`). The Core representation of `f`
-   will be printed interleaved with the normal compiler output.
+The Core representation of `f` will be printed interleaved with the normal compiler output during `stack build` / `cabal build`.
+
+### `coreOfWith` — write Core to a file
+
+Use `coreOfWith` to direct the output to a file instead of stdout:
+
+```haskell
+{-# LANGUAGE TemplateHaskell #-}
+{-# language OverloadedStrings #-}
+{-# OPTIONS_GHC -fplugin=CoreOfName.Plugin #-}
+module MyModule where
+
+import CoreOfName.Types (coreOfWith)
+
+f :: Double -> Double -> Double
+f = \x y -> sqrt x + y
+
+coreOfWith "output.core" 'f
+```
+
+The string literal is an `Options` value via the `IsString` instance and is equivalent to `OToFile "output.core"`.
+
+### Explicit `Options`
+
+You can also pass `Options` values directly:
+
+```haskell
+import CoreOfName.Types (coreOfWith, Options(..))
+
+-- print to stdout (same as coreOf)
+coreOfWith OPrintCore 'f
+
+-- write to a file
+coreOfWith (OToFile "output.core") 'f
+```
 
 ## Building
 
