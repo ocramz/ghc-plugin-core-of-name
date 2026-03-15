@@ -20,7 +20,7 @@ import GHC.Types.Annotations (Annotation(..))
 import GHC.Utils.Outputable (ppr)
 import qualified Language.Haskell.TH.Syntax as TH (Name)
 
-import CoreOfName.Types (Target(..))
+import CoreOfName.Types (Target(..), Options(..))
 
 -- | The GHC plugin entry point. Appends a Core-to-Core pass that
 --   finds annotated bindings and prints their Core representation.
@@ -37,19 +37,24 @@ install cliOpts todos = pure (todos ++ [pass])
     pass = CoreDoPluginPass "CoreOfName" $ \guts -> do
       let (guts', targets) = extractTargets guts
       liftIO $ putStrLn $ unwords ["CLI options:", show cliOpts, "| Found", show (length targets), "targets"]
-      traverse_ (\t -> printCore guts' (tgName t)) targets
+      traverse_ (printCore guts') targets
       pure guts'
 
 
 -- | Pretty-print the Core representation of the binding with the
 --   given TH 'Name'.
-printCore :: ModGuts -> TH.Name -> CoreM ()
-printCore guts thn = do
+printCore :: ModGuts -> Target -> CoreM ()
+printCore guts target = do
+  let 
+    thn = tgName target
+    thOpts = tgOptions target
   mn <- lookupTHName guts thn
   case mn of
     Just (_, coreExpr) -> do
       dflags <- getDynFlags
-      putMsgS $ showSDoc dflags (ppr coreExpr)
+      case thOpts of
+        OPrintCore -> putMsgS $ showSDoc dflags (ppr coreExpr)
+        OToFile fp -> liftIO $ writeFile fp (showSDoc dflags (ppr coreExpr))
     Nothing ->
       putMsgS $ "CoreOfName: Cannot find name " ++ show thn
 

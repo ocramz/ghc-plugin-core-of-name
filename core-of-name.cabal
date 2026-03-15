@@ -39,7 +39,7 @@ executable core-of-name
   build-depends:       base
                      , core-of-name
   ghc-options:         -Wall
-                       -ddump-to-file
+
 
 source-repository head
   type:     git
