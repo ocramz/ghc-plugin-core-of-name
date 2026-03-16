@@ -2,8 +2,8 @@ cabal-version:       2.2
 
 name:                core-of-name
 version:             0.1.0.0
-synopsis:            GHC plugin to print the Core representation of a given binding
-description:         A GHC plugin that prints the Core representation of a given binding, either to the console or to a file. Useful for debugging and learning about GHC's Core language.
+synopsis:            Print the Core representation of a binding with a GHC plugin.
+description:         GHC plugin that prints the Core representation of a given binding, either to the console or to a file. Useful for debugging and learning about GHC's Core language.
 homepage:            https://github.com/ocramz/ghc-plugin-core-of-name
 license:             BSD-3-Clause
 license-file:        LICENSE
