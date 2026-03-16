@@ -1,5 +1,7 @@
 # core-of-name
 
+[![CI](https://github.com/ocramz/ghc-plugin-core-of-name/actions/workflows/ci.yml/badge.svg)](https://github.com/ocramz/ghc-plugin-core-of-name/actions/workflows/ci.yml)
+
 GHC plugin that prints the Core intermediate representation of annotated Haskell bindings during compilation.
 
 Based on the technique described in
