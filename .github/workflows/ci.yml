@@ -18,8 +18,6 @@ jobs:
             snapshot: "lts-24.34"
           - ghc: "9.8.4"
             snapshot: "lts-23.22"
-          - ghc: "9.6.7"
-            snapshot: "lts-22.43"
 
     steps:
       - uses: actions/checkout@v4
